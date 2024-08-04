@@ -1,17 +1,13 @@
 ﻿using DataTable.Models.Core;
-using System.Data;
-using System;
-using Microsoft.VisualBasic;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Microsoft.Extensions.Hosting;
-using static System.Net.Mime.MediaTypeNames;
-using System.IO;
-using System.Runtime.InteropServices;
 
 namespace DataTable.Services
 {
     public class EmployeeService
     {
+        /// <summary>
+        /// Fake service that returns employee records
+        /// </summary>
+        /// <returns></returns>
         public List<EmployeeDetails> GetEmployees()
         {
             return new List<EmployeeDetails>
