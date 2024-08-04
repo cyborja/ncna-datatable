@@ -2,7 +2,152 @@
     ViewData["Title"] = "Home Page";
 }
 
+@section Stylesheet {
+    <link rel="stylesheet" href="//cdn.datatables.net/2.1.3/css/dataTables.dataTables.min.css" />
+}
+
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
+<table id="data-table" class="stripe row-border order-column" style="width:100%">
+    <thead>
+        <tr>
+            <th>Firstname</th>
+            <th>
+                <div>Lastname</div>
+                <div >
+                    <select id="dt-filter-by-lastname" class="form-select form-select-sm mb-3">
+                        <option selected>Filter By Lastname</option>
+                    </select>
+                </div>
+            </th>
+            <th>
+                <div>Position</div>
+                <div>
+                    <select id="dt-filter-by-position" class="form-select form-select-sm mb-3">
+                        <option selected>Filter By Position</option>
+                    </select>
+                </div>
+            </th>
+            <th>
+                <div>Office</div>
+                <div>
+                    <select id="dt-filter-by-office" class="form-select form-select-sm mb-3">
+                        <option selected>Filter By Office</option>
+                    </select>
+                </div>
+            </th>
+            <th>Age</th>
+            <th>Start date</th>
+            <th>Salary</th>
+            <th>Extn.</th>
+            <th>E-mail</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+
+
+@section Scripts {
+    <script src="//cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
+    <script>
+        const rootUrl = '@Url.RouteUrl(new { controller = "" })';
+
+        $(document).ready(function () {
+            var $table = null;
+            var $filterByLastname = $('#dt-filter-by-lastname');
+            var $filterByPosition = $('#dt-filter-by-position');
+            var $filterByOffice = $('#dt-filter-by-office');
+            var queryLastname = '';
+            var queryPosition = '';
+            var queryOffice = '';
+            var getUrl = () => {
+                return `${rootUrl}api/employees?lastname=${queryLastname}&position=${queryPosition}&office=${queryOffice}`;
+            };
+
+            // Prevent onclick event propagation so that DataTable filter won't be activated
+            $filterByLastname.on('click', function (e) { e.stopPropagation(); });
+            $filterByPosition.on('click', function (e) { e.stopPropagation(); });
+            $filterByOffice.on('click', function (e) { e.stopPropagation(); });
+
+
+            $filterByLastname.on('change', function () {
+                queryLastname = '';
+
+                if (this.value != 'Filter By Lastname') {
+                    queryLastname = this.value;
+                }
+
+                $table.ajax.url(getUrl()).load();
+            });
+
+
+            $filterByPosition.on('change', function () {
+                queryPosition = '';
+
+                if (this.value != 'Filter By Position') {
+                    queryPosition = this.value;
+                }
+
+                $table.ajax.url(getUrl()).load();
+            });
+
+
+            $filterByOffice.on('change', function () {
+                queryOffice = '';
+
+                if (this.value != 'Filter By Office') {
+                    queryOffice = this.value;
+                }
+
+                $table.ajax.url(getUrl()).load();
+            });
+
+            $.get(`${rootUrl}api/employees/lastname`, function (data) {
+                if (data && data.length) {
+                    for (let i of data) {
+                        $filterByLastname.append(`<option>${i}</option>`)
+                    }
+                }
+            });
+
+            $.get(`${rootUrl}api/employees/position`, function (data) {
+                if (data && data.length) {
+                    for (let i of data) {
+                        $filterByPosition.append(`<option>${i}</option>`)
+                    }
+                }
+            });
+
+            $.get(`${rootUrl}api/employees/office`, function (data) {
+                if (data && data.length) {
+                    for (let i of data) {
+                        $filterByOffice.append(`<option>${i}</option>`)
+                    }
+                }
+            });
+
+            $table = $('#data-table').DataTable({
+                ajax: {
+                    url: getUrl(),
+                    dataSrc: ''
+                },
+                columns:[
+                    { data: 'firstname' },
+                    { data: 'lastname' },
+                    { data: 'position' },
+                    { data: 'office' },
+                    { data: 'age' },
+                    { data: 'startDate' },
+                    { data: 'salary' },
+                    { data: 'extension' },
+                    { data: 'email' }
+                ]
+            })
+        });
+    </script>
+}
